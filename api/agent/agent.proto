@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package api.agent;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/omalloc/kratos-agent/api/agent;agent";
+option java_multiple_files = true;
+option java_package = "api.agent";
+
+// Agent is microservice that provides information about the services
+// 
+// @endpoint /api/v1/agent
+service Agent {
+	rpc ListService (ListServiceRequest) returns (ListServiceReply) {
+		option (google.api.http) = {
+			get: "/agent/services"
+		};
+	};
+}
+
+message ListServiceRequest {}
+message ListServiceReply {}

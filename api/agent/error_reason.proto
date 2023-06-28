@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package api.agent;
+
+option go_package = "github.com/omalloc/kratos-agent/api/agent;agent";
+option java_multiple_files = true;
+option java_package = "api.agent";
+
+enum ErrorReason {
+  GREETER_UNSPECIFIED = 0;
+  USER_NOT_FOUND = 1;
+}
