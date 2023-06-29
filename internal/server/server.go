@@ -8,7 +8,9 @@ import (
 
 	"github.com/omalloc/kratos-agent/internal/conf"
 	"github.com/omalloc/kratos-agent/internal/data"
+	"github.com/omalloc/kratos-agent/internal/server/adapter"
 	"github.com/omalloc/kratos-agent/internal/service"
+	"github.com/omalloc/kratos-agent/pkg/cluster"
 )
 
 // ProviderSet is server providers.
@@ -23,6 +25,11 @@ var ProviderSet = wire.NewSet(
 	registry.NewDiscovery,
 
 	health.NewServer,
+
+	adapter.NewETCDChecker,
+
+	// etcd clusters
+	cluster.NewClients,
 )
 
 func NewRegistryConfig(bc *conf.Bootstrap) *protobuf.Registry {
@@ -33,6 +40,6 @@ func NewTracingConfig(bc *conf.Bootstrap) *protobuf.Tracing {
 	return bc.Tracing
 }
 
-func NewChecker(c1 *data.Data, agent *service.AgentService) []health.Checker {
-	return []health.Checker{c1, agent}
+func NewChecker(c1 *data.Data, etcd *adapter.Etcd, agent *service.AgentService) []health.Checker {
+	return []health.Checker{c1, etcd, agent}
 }

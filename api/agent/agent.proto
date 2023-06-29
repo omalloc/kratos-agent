@@ -3,6 +3,7 @@ syntax = "proto3";
 package api.agent;
 
 import "google/api/annotations.proto";
+import "agent/microservice.proto";
 
 option go_package = "github.com/omalloc/kratos-agent/api/agent;agent";
 option java_multiple_files = true;
@@ -12,12 +13,43 @@ option java_package = "api.agent";
 // 
 // @endpoint /api/v1/agent
 service Agent {
+	// ListCluster 获取集群列表
+	//
+	// returns a list of clusters
+	rpc ListCluster (ListClusterRequest) returns (ListClusterReply) {
+		option (google.api.http) = {
+			get: "/agent/clusters"
+		};
+	};
+	// ListService 获取服务列表
+	//
+	// returns a list of services
 	rpc ListService (ListServiceRequest) returns (ListServiceReply) {
 		option (google.api.http) = {
 			get: "/agent/services"
 		};
 	};
+	// ListServiceGroup 获取服务分组列表
+	// 
+	// returns a list of group by service.
+	rpc ListServiceGroup (ListServiceGroupRequest) returns (ListServiceGroupReply) {
+		option (google.api.http) = {
+			get: "/agent/services/group"
+		};
+	};
 }
 
 message ListServiceRequest {}
-message ListServiceReply {}
+message ListServiceReply {
+	repeated Microservice data = 1;
+}
+
+message ListServiceGroupRequest {}
+message ListServiceGroupReply {
+	repeated MicroserviceGroup data = 1;
+}
+
+message ListClusterRequest {}
+message ListClusterReply {
+	repeated Cluster data = 1;
+}

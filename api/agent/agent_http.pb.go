@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.6.2
 // - protoc             v4.23.2
-// source: api/agent/agent.proto
+// source: agent/agent.proto
 
 package agent
 
@@ -19,15 +19,49 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationAgentListCluster = "/api.agent.Agent/ListCluster"
 const OperationAgentListService = "/api.agent.Agent/ListService"
+const OperationAgentListServiceGroup = "/api.agent.Agent/ListServiceGroup"
 
 type AgentHTTPServer interface {
+	// ListCluster ListCluster 获取集群列表
+	//
+	// returns a list of clusters
+	ListCluster(context.Context, *ListClusterRequest) (*ListClusterReply, error)
+	// ListService ListService 获取服务列表
+	//
+	// returns a list of services
 	ListService(context.Context, *ListServiceRequest) (*ListServiceReply, error)
+	// ListServiceGroup ListServiceGroup 获取服务分组列表
+	//
+	// returns a list of group by service.
+	ListServiceGroup(context.Context, *ListServiceGroupRequest) (*ListServiceGroupReply, error)
 }
 
 func RegisterAgentHTTPServer(s *http.Server, srv AgentHTTPServer) {
 	r := s.Route("/")
+	r.GET("/agent/clusters", _Agent_ListCluster0_HTTP_Handler(srv))
 	r.GET("/agent/services", _Agent_ListService0_HTTP_Handler(srv))
+	r.GET("/agent/services/group", _Agent_ListServiceGroup0_HTTP_Handler(srv))
+}
+
+func _Agent_ListCluster0_HTTP_Handler(srv AgentHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListClusterRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAgentListCluster)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListCluster(ctx, req.(*ListClusterRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListClusterReply)
+		return ctx.Result(200, reply)
+	}
 }
 
 func _Agent_ListService0_HTTP_Handler(srv AgentHTTPServer) func(ctx http.Context) error {
@@ -49,8 +83,29 @@ func _Agent_ListService0_HTTP_Handler(srv AgentHTTPServer) func(ctx http.Context
 	}
 }
 
+func _Agent_ListServiceGroup0_HTTP_Handler(srv AgentHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListServiceGroupRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAgentListServiceGroup)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListServiceGroup(ctx, req.(*ListServiceGroupRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListServiceGroupReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AgentHTTPClient interface {
+	ListCluster(ctx context.Context, req *ListClusterRequest, opts ...http.CallOption) (rsp *ListClusterReply, err error)
 	ListService(ctx context.Context, req *ListServiceRequest, opts ...http.CallOption) (rsp *ListServiceReply, err error)
+	ListServiceGroup(ctx context.Context, req *ListServiceGroupRequest, opts ...http.CallOption) (rsp *ListServiceGroupReply, err error)
 }
 
 type AgentHTTPClientImpl struct {
@@ -61,11 +116,37 @@ func NewAgentHTTPClient(client *http.Client) AgentHTTPClient {
 	return &AgentHTTPClientImpl{client}
 }
 
+func (c *AgentHTTPClientImpl) ListCluster(ctx context.Context, in *ListClusterRequest, opts ...http.CallOption) (*ListClusterReply, error) {
+	var out ListClusterReply
+	pattern := "/agent/clusters"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAgentListCluster))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *AgentHTTPClientImpl) ListService(ctx context.Context, in *ListServiceRequest, opts ...http.CallOption) (*ListServiceReply, error) {
 	var out ListServiceReply
 	pattern := "/agent/services"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationAgentListService))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AgentHTTPClientImpl) ListServiceGroup(ctx context.Context, in *ListServiceGroupRequest, opts ...http.CallOption) (*ListServiceGroupReply, error) {
+	var out ListServiceGroupReply
+	pattern := "/agent/services/group"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAgentListServiceGroup))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

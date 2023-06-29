@@ -2,6 +2,21 @@ registry:
   enabled: true
   only_discovery: true
   endpoints:
-    - 127.0.0.1:2379
+    - 172.18.156.47:2379
+    - 172.18.156.148:2379
+    - 172.18.156.207:2379
 tracing:
   endpoint: http://127.0.0.1:14268/api/traces
+clusters:
+  - name: xm
+    enabled: true
+    endpoints:
+      - 172.18.156.47:2379
+      - 172.18.156.148:2379
+      - 172.18.156.207:2379
+  - name: bj
+    enabled: true
+    endpoints:
+      - 172.18.156.47:2379
+      - 172.18.156.148:2379
+      - 172.18.156.207:2379

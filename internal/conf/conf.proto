@@ -12,6 +12,7 @@ message Bootstrap {
   Data data = 2;
   omalloc.protobuf.Tracing tracing = 3;
   omalloc.protobuf.Registry registry = 4;
+  repeated Cluster clusters = 5;
 }
 
 message Server {
@@ -42,4 +43,10 @@ message Data {
   }
   Database database = 1;
   Redis redis = 2;
+}
+
+message Cluster {
+  string name = 1; // 集群名称
+  bool enabled = 2; // 是否开启连接
+  repeated string endpoints = 3; // 集群入口
 }

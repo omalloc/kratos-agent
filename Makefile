@@ -71,11 +71,11 @@ run:
 .PHONY: build
 # build
 build:
-	mkdir -p bin/ && go build -ldflags=" \
+	mkdir -p bin/ && gox -osarch="linux/amd64" -ldflags="-w -extldflags=-static \
     -X main.Version=$(VERSION) \
     -X main.GitHash=$(GITHASH) \
     -X main.Name=$(APPNAME) \
-    -X main.Built=$(Built)" -o ./bin/ ./...
+    -X main.Built=$(Built)" -output=bin/server ./...
 
 .PHONY: zip
 # zip bin file

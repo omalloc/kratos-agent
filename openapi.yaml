@@ -7,10 +7,30 @@ info:
     description: "Agent is microservice that provides information about the services\n \n @endpoint /api/v1/agent"
     version: 0.0.1
 paths:
+    /agent/clusters:
+        get:
+            tags:
+                - Agent
+            description: |-
+                ListCluster 获取集群列表
+
+                 returns a list of clusters
+            operationId: Agent_ListCluster
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.agent.ListClusterReply'
     /agent/services:
         get:
             tags:
                 - Agent
+            description: |-
+                ListService 获取服务列表
+
+                 returns a list of services
             operationId: Agent_ListService
             responses:
                 "200":
@@ -18,41 +38,130 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ListServiceReply'
-                default:
-                    description: Default error response
+                                $ref: '#/components/schemas/api.agent.ListServiceReply'
+    /agent/services/group:
+        get:
+            tags:
+                - Agent
+            description: "ListServiceGroup 获取服务分组列表\n \n returns a list of group by service."
+            operationId: Agent_ListServiceGroup
+            responses:
+                "200":
+                    description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/Status'
+                                $ref: '#/components/schemas/api.agent.ListServiceGroupReply'
 components:
     schemas:
-        GoogleProtobufAny:
+        api.agent.Cluster:
             type: object
             properties:
-                '@type':
+                name:
                     type: string
-                    description: The type of the serialized message.
-            additionalProperties: true
-            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-        ListServiceReply:
-            type: object
-            properties: {}
-        Status:
-            type: object
-            properties:
-                code:
-                    type: integer
-                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
-                    format: int32
-                message:
-                    type: string
-                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
-                details:
+                    description: 集群名称
+                healthy:
+                    type: boolean
+                    description: 集群健康状态
+                members:
                     type: array
                     items:
-                        $ref: '#/components/schemas/GoogleProtobufAny'
-                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
-            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+                        $ref: '#/components/schemas/api.agent.Cluster_Member'
+                    description: 集群成员
+        api.agent.Cluster_Member:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: 成员名称
+                is_learner:
+                    type: boolean
+                    description: 是否为 learner
+                peer_urls:
+                    type: array
+                    items:
+                        type: string
+                    description: 成员地址
+                client_urls:
+                    type: array
+                    items:
+                        type: string
+                    description: 客户端地址
+            description: 集群成员信息
+        api.agent.ListClusterReply:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.agent.Cluster'
+        api.agent.ListServiceGroupReply:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.agent.MicroserviceGroup'
+        api.agent.ListServiceReply:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.agent.Microservice'
+        api.agent.Microservice:
+            type: object
+            properties:
+                key:
+                    type: string
+                    description: 唯一键
+                id:
+                    type: string
+                    description: 服务id
+                name:
+                    type: string
+                    description: 服务名称
+                version:
+                    type: string
+                    description: 服务版本
+                endpoints:
+                    type: array
+                    items:
+                        type: string
+                    description: 服务端点IP
+                metadata:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: 服务元数据
+                cluster:
+                    type: string
+                    description: 所属集群
+        api.agent.MicroserviceGroup:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: 服务名称
+                endpoints:
+                    type: array
+                    items:
+                        type: string
+                    description: 服务IP
+                keys:
+                    type: array
+                    items:
+                        type: string
+                    description: 服务唯一键
+                hostnames:
+                    type: array
+                    items:
+                        type: string
+                    description: 运行主机名
+                clusters:
+                    type: array
+                    items:
+                        type: string
+                    description: 运行所属集群
 tags:
     - name: Agent

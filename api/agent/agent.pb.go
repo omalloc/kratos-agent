@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.31.0
 // 	protoc        v4.23.2
-// source: api/agent/agent.proto
+// source: agent/agent.proto
 
 package agent
 
@@ -30,7 +30,7 @@ type ListServiceRequest struct {
 func (x *ListServiceRequest) Reset() {
 	*x = ListServiceRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_agent_agent_proto_msgTypes[0]
+		mi := &file_agent_agent_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -43,7 +43,7 @@ func (x *ListServiceRequest) String() string {
 func (*ListServiceRequest) ProtoMessage() {}
 
 func (x *ListServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_agent_agent_proto_msgTypes[0]
+	mi := &file_agent_agent_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,19 +56,21 @@ func (x *ListServiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListServiceRequest.ProtoReflect.Descriptor instead.
 func (*ListServiceRequest) Descriptor() ([]byte, []int) {
-	return file_api_agent_agent_proto_rawDescGZIP(), []int{0}
+	return file_agent_agent_proto_rawDescGZIP(), []int{0}
 }
 
 type ListServiceReply struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	Data []*Microservice `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
 }
 
 func (x *ListServiceReply) Reset() {
 	*x = ListServiceReply{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_agent_agent_proto_msgTypes[1]
+		mi := &file_agent_agent_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -81,7 +83,7 @@ func (x *ListServiceReply) String() string {
 func (*ListServiceReply) ProtoMessage() {}
 
 func (x *ListServiceReply) ProtoReflect() protoreflect.Message {
-	mi := &file_api_agent_agent_proto_msgTypes[1]
+	mi := &file_agent_agent_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -94,66 +96,288 @@ func (x *ListServiceReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListServiceReply.ProtoReflect.Descriptor instead.
 func (*ListServiceReply) Descriptor() ([]byte, []int) {
-	return file_api_agent_agent_proto_rawDescGZIP(), []int{1}
+	return file_agent_agent_proto_rawDescGZIP(), []int{1}
 }
 
-var File_api_agent_agent_proto protoreflect.FileDescriptor
+func (x *ListServiceReply) GetData() []*Microservice {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
 
-var file_api_agent_agent_proto_rawDesc = []byte{
-	0x0a, 0x15, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2f, 0x61, 0x67, 0x65, 0x6e,
-	0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x09, 0x61, 0x70, 0x69, 0x2e, 0x61, 0x67, 0x65,
-	0x6e, 0x74, 0x1a, 0x1c, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61,
-	0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x22, 0x14, 0x0a, 0x12, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x12, 0x0a, 0x10, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65,
-	0x72, 0x76, 0x69, 0x63, 0x65, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x32, 0x6b, 0x0a, 0x05, 0x41, 0x67,
-	0x65, 0x6e, 0x74, 0x12, 0x62, 0x0a, 0x0b, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69,
+type ListServiceGroupRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ListServiceGroupRequest) Reset() {
+	*x = ListServiceGroupRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_agent_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListServiceGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListServiceGroupRequest) ProtoMessage() {}
+
+func (x *ListServiceGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_agent_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListServiceGroupRequest.ProtoReflect.Descriptor instead.
+func (*ListServiceGroupRequest) Descriptor() ([]byte, []int) {
+	return file_agent_agent_proto_rawDescGZIP(), []int{2}
+}
+
+type ListServiceGroupReply struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Data []*MicroserviceGroup `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+}
+
+func (x *ListServiceGroupReply) Reset() {
+	*x = ListServiceGroupReply{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_agent_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListServiceGroupReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListServiceGroupReply) ProtoMessage() {}
+
+func (x *ListServiceGroupReply) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_agent_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListServiceGroupReply.ProtoReflect.Descriptor instead.
+func (*ListServiceGroupReply) Descriptor() ([]byte, []int) {
+	return file_agent_agent_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ListServiceGroupReply) GetData() []*MicroserviceGroup {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type ListClusterRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ListClusterRequest) Reset() {
+	*x = ListClusterRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_agent_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListClusterRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListClusterRequest) ProtoMessage() {}
+
+func (x *ListClusterRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_agent_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListClusterRequest.ProtoReflect.Descriptor instead.
+func (*ListClusterRequest) Descriptor() ([]byte, []int) {
+	return file_agent_agent_proto_rawDescGZIP(), []int{4}
+}
+
+type ListClusterReply struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Data []*Cluster `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+}
+
+func (x *ListClusterReply) Reset() {
+	*x = ListClusterReply{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_agent_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListClusterReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListClusterReply) ProtoMessage() {}
+
+func (x *ListClusterReply) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_agent_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListClusterReply.ProtoReflect.Descriptor instead.
+func (*ListClusterReply) Descriptor() ([]byte, []int) {
+	return file_agent_agent_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ListClusterReply) GetData() []*Cluster {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+var File_agent_agent_proto protoreflect.FileDescriptor
+
+var file_agent_agent_proto_rawDesc = []byte{
+	0x0a, 0x11, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2f, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x12, 0x09, 0x61, 0x70, 0x69, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x1a, 0x1c,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x6e, 0x6e, 0x6f, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x18, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x2f, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x14, 0x0a, 0x12, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65,
+	0x72, 0x76, 0x69, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x3f, 0x0a, 0x10,
+	0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x52, 0x65, 0x70, 0x6c, 0x79,
+	0x12, 0x2b, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x4d, 0x69, 0x63, 0x72, 0x6f,
+	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x19, 0x0a,
+	0x17, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x47, 0x72, 0x6f, 0x75,
+	0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x49, 0x0a, 0x15, 0x4c, 0x69, 0x73, 0x74,
+	0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x70, 0x6c,
+	0x79, 0x12, 0x30, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x1c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x4d, 0x69, 0x63, 0x72,
+	0x6f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x04, 0x64,
+	0x61, 0x74, 0x61, 0x22, 0x14, 0x0a, 0x12, 0x4c, 0x69, 0x73, 0x74, 0x43, 0x6c, 0x75, 0x73, 0x74,
+	0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x3a, 0x0a, 0x10, 0x4c, 0x69, 0x73,
+	0x74, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x12, 0x26, 0x0a,
+	0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x52,
+	0x04, 0x64, 0x61, 0x74, 0x61, 0x32, 0xc8, 0x02, 0x0a, 0x05, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x12,
+	0x62, 0x0a, 0x0b, 0x4c, 0x69, 0x73, 0x74, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x12, 0x1d,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x43,
+	0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x43, 0x6c,
+	0x75, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x17, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x11, 0x12, 0x0f, 0x2f, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2f, 0x63, 0x6c, 0x75, 0x73, 0x74,
+	0x65, 0x72, 0x73, 0x12, 0x62, 0x0a, 0x0b, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69,
 	0x63, 0x65, 0x12, 0x1d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x4c,
 	0x69, 0x73, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
 	0x74, 0x1a, 0x1b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x4c, 0x69,
 	0x73, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x17,
 	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x11, 0x12, 0x0f, 0x2f, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2f, 0x73,
-	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x42, 0x3e, 0x0a, 0x09, 0x61, 0x70, 0x69, 0x2e, 0x61,
-	0x67, 0x65, 0x6e, 0x74, 0x50, 0x01, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
-	0x6f, 0x6d, 0x2f, 0x6f, 0x6d, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x2f, 0x6b, 0x72, 0x61, 0x74, 0x6f,
-	0x73, 0x2d, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x67, 0x65, 0x6e,
-	0x74, 0x3b, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x12, 0x77, 0x0a, 0x10, 0x4c, 0x69, 0x73, 0x74, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x12, 0x22, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x20, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x4c, 0x69, 0x73, 0x74,
+	0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x65, 0x70, 0x6c,
+	0x79, 0x22, 0x1d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x17, 0x12, 0x15, 0x2f, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x67, 0x72, 0x6f, 0x75, 0x70,
+	0x42, 0x3e, 0x0a, 0x09, 0x61, 0x70, 0x69, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x50, 0x01, 0x5a,
+	0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6f, 0x6d, 0x61, 0x6c,
+	0x6c, 0x6f, 0x63, 0x2f, 0x6b, 0x72, 0x61, 0x74, 0x6f, 0x73, 0x2d, 0x61, 0x67, 0x65, 0x6e, 0x74,
+	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x3b, 0x61, 0x67, 0x65, 0x6e, 0x74,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
-	file_api_agent_agent_proto_rawDescOnce sync.Once
-	file_api_agent_agent_proto_rawDescData = file_api_agent_agent_proto_rawDesc
+	file_agent_agent_proto_rawDescOnce sync.Once
+	file_agent_agent_proto_rawDescData = file_agent_agent_proto_rawDesc
 )
 
-func file_api_agent_agent_proto_rawDescGZIP() []byte {
-	file_api_agent_agent_proto_rawDescOnce.Do(func() {
-		file_api_agent_agent_proto_rawDescData = protoimpl.X.CompressGZIP(file_api_agent_agent_proto_rawDescData)
+func file_agent_agent_proto_rawDescGZIP() []byte {
+	file_agent_agent_proto_rawDescOnce.Do(func() {
+		file_agent_agent_proto_rawDescData = protoimpl.X.CompressGZIP(file_agent_agent_proto_rawDescData)
 	})
-	return file_api_agent_agent_proto_rawDescData
+	return file_agent_agent_proto_rawDescData
 }
 
-var file_api_agent_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_api_agent_agent_proto_goTypes = []interface{}{
-	(*ListServiceRequest)(nil), // 0: api.agent.ListServiceRequest
-	(*ListServiceReply)(nil),   // 1: api.agent.ListServiceReply
+var file_agent_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_agent_agent_proto_goTypes = []interface{}{
+	(*ListServiceRequest)(nil),      // 0: api.agent.ListServiceRequest
+	(*ListServiceReply)(nil),        // 1: api.agent.ListServiceReply
+	(*ListServiceGroupRequest)(nil), // 2: api.agent.ListServiceGroupRequest
+	(*ListServiceGroupReply)(nil),   // 3: api.agent.ListServiceGroupReply
+	(*ListClusterRequest)(nil),      // 4: api.agent.ListClusterRequest
+	(*ListClusterReply)(nil),        // 5: api.agent.ListClusterReply
+	(*Microservice)(nil),            // 6: api.agent.Microservice
+	(*MicroserviceGroup)(nil),       // 7: api.agent.MicroserviceGroup
+	(*Cluster)(nil),                 // 8: api.agent.Cluster
 }
-var file_api_agent_agent_proto_depIdxs = []int32{
-	0, // 0: api.agent.Agent.ListService:input_type -> api.agent.ListServiceRequest
-	1, // 1: api.agent.Agent.ListService:output_type -> api.agent.ListServiceReply
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+var file_agent_agent_proto_depIdxs = []int32{
+	6, // 0: api.agent.ListServiceReply.data:type_name -> api.agent.Microservice
+	7, // 1: api.agent.ListServiceGroupReply.data:type_name -> api.agent.MicroserviceGroup
+	8, // 2: api.agent.ListClusterReply.data:type_name -> api.agent.Cluster
+	4, // 3: api.agent.Agent.ListCluster:input_type -> api.agent.ListClusterRequest
+	0, // 4: api.agent.Agent.ListService:input_type -> api.agent.ListServiceRequest
+	2, // 5: api.agent.Agent.ListServiceGroup:input_type -> api.agent.ListServiceGroupRequest
+	5, // 6: api.agent.Agent.ListCluster:output_type -> api.agent.ListClusterReply
+	1, // 7: api.agent.Agent.ListService:output_type -> api.agent.ListServiceReply
+	3, // 8: api.agent.Agent.ListServiceGroup:output_type -> api.agent.ListServiceGroupReply
+	6, // [6:9] is the sub-list for method output_type
+	3, // [3:6] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
-func init() { file_api_agent_agent_proto_init() }
-func file_api_agent_agent_proto_init() {
-	if File_api_agent_agent_proto != nil {
+func init() { file_agent_agent_proto_init() }
+func file_agent_agent_proto_init() {
+	if File_agent_agent_proto != nil {
 		return
 	}
+	file_agent_microservice_proto_init()
 	if !protoimpl.UnsafeEnabled {
-		file_api_agent_agent_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_agent_agent_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ListServiceRequest); i {
 			case 0:
 				return &v.state
@@ -165,8 +389,56 @@ func file_api_agent_agent_proto_init() {
 				return nil
 			}
 		}
-		file_api_agent_agent_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_agent_agent_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ListServiceReply); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_agent_agent_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListServiceGroupRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_agent_agent_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListServiceGroupReply); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_agent_agent_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListClusterRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_agent_agent_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListClusterReply); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -182,18 +454,18 @@ func file_api_agent_agent_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_api_agent_agent_proto_rawDesc,
+			RawDescriptor: file_agent_agent_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_api_agent_agent_proto_goTypes,
-		DependencyIndexes: file_api_agent_agent_proto_depIdxs,
-		MessageInfos:      file_api_agent_agent_proto_msgTypes,
+		GoTypes:           file_agent_agent_proto_goTypes,
+		DependencyIndexes: file_agent_agent_proto_depIdxs,
+		MessageInfos:      file_agent_agent_proto_msgTypes,
 	}.Build()
-	File_api_agent_agent_proto = out.File
-	file_api_agent_agent_proto_rawDesc = nil
-	file_api_agent_agent_proto_goTypes = nil
-	file_api_agent_agent_proto_depIdxs = nil
+	File_agent_agent_proto = out.File
+	file_agent_agent_proto_rawDesc = nil
+	file_agent_agent_proto_goTypes = nil
+	file_agent_agent_proto_depIdxs = nil
 }

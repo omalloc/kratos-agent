@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.2
-// source: api/agent/agent.proto
+// source: agent/agent.proto
 
 package agent
 
@@ -19,14 +19,27 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Agent_ListService_FullMethodName = "/api.agent.Agent/ListService"
+	Agent_ListCluster_FullMethodName      = "/api.agent.Agent/ListCluster"
+	Agent_ListService_FullMethodName      = "/api.agent.Agent/ListService"
+	Agent_ListServiceGroup_FullMethodName = "/api.agent.Agent/ListServiceGroup"
 )
 
 // AgentClient is the client API for Agent service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AgentClient interface {
+	// ListCluster 获取集群列表
+	//
+	// returns a list of clusters
+	ListCluster(ctx context.Context, in *ListClusterRequest, opts ...grpc.CallOption) (*ListClusterReply, error)
+	// ListService 获取服务列表
+	//
+	// returns a list of services
 	ListService(ctx context.Context, in *ListServiceRequest, opts ...grpc.CallOption) (*ListServiceReply, error)
+	// ListServiceGroup 获取服务分组列表
+	//
+	// returns a list of group by service.
+	ListServiceGroup(ctx context.Context, in *ListServiceGroupRequest, opts ...grpc.CallOption) (*ListServiceGroupReply, error)
 }
 
 type agentClient struct {
@@ -35,6 +48,15 @@ type agentClient struct {
 
 func NewAgentClient(cc grpc.ClientConnInterface) AgentClient {
 	return &agentClient{cc}
+}
+
+func (c *agentClient) ListCluster(ctx context.Context, in *ListClusterRequest, opts ...grpc.CallOption) (*ListClusterReply, error) {
+	out := new(ListClusterReply)
+	err := c.cc.Invoke(ctx, Agent_ListCluster_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *agentClient) ListService(ctx context.Context, in *ListServiceRequest, opts ...grpc.CallOption) (*ListServiceReply, error) {
@@ -46,11 +68,31 @@ func (c *agentClient) ListService(ctx context.Context, in *ListServiceRequest, o
 	return out, nil
 }
 
+func (c *agentClient) ListServiceGroup(ctx context.Context, in *ListServiceGroupRequest, opts ...grpc.CallOption) (*ListServiceGroupReply, error) {
+	out := new(ListServiceGroupReply)
+	err := c.cc.Invoke(ctx, Agent_ListServiceGroup_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AgentServer is the server API for Agent service.
 // All implementations must embed UnimplementedAgentServer
 // for forward compatibility
 type AgentServer interface {
+	// ListCluster 获取集群列表
+	//
+	// returns a list of clusters
+	ListCluster(context.Context, *ListClusterRequest) (*ListClusterReply, error)
+	// ListService 获取服务列表
+	//
+	// returns a list of services
 	ListService(context.Context, *ListServiceRequest) (*ListServiceReply, error)
+	// ListServiceGroup 获取服务分组列表
+	//
+	// returns a list of group by service.
+	ListServiceGroup(context.Context, *ListServiceGroupRequest) (*ListServiceGroupReply, error)
 	mustEmbedUnimplementedAgentServer()
 }
 
@@ -58,8 +100,14 @@ type AgentServer interface {
 type UnimplementedAgentServer struct {
 }
 
+func (UnimplementedAgentServer) ListCluster(context.Context, *ListClusterRequest) (*ListClusterReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListCluster not implemented")
+}
 func (UnimplementedAgentServer) ListService(context.Context, *ListServiceRequest) (*ListServiceReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListService not implemented")
+}
+func (UnimplementedAgentServer) ListServiceGroup(context.Context, *ListServiceGroupRequest) (*ListServiceGroupReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListServiceGroup not implemented")
 }
 func (UnimplementedAgentServer) mustEmbedUnimplementedAgentServer() {}
 
@@ -72,6 +120,24 @@ type UnsafeAgentServer interface {
 
 func RegisterAgentServer(s grpc.ServiceRegistrar, srv AgentServer) {
 	s.RegisterService(&Agent_ServiceDesc, srv)
+}
+
+func _Agent_ListCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListClusterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServer).ListCluster(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Agent_ListCluster_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServer).ListCluster(ctx, req.(*ListClusterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Agent_ListService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -92,6 +158,24 @@ func _Agent_ListService_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Agent_ListServiceGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListServiceGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServer).ListServiceGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Agent_ListServiceGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServer).ListServiceGroup(ctx, req.(*ListServiceGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Agent_ServiceDesc is the grpc.ServiceDesc for Agent service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -100,10 +184,18 @@ var Agent_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AgentServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "ListCluster",
+			Handler:    _Agent_ListCluster_Handler,
+		},
+		{
 			MethodName: "ListService",
 			Handler:    _Agent_ListService_Handler,
 		},
+		{
+			MethodName: "ListServiceGroup",
+			Handler:    _Agent_ListServiceGroup_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/agent/agent.proto",
+	Metadata: "agent/agent.proto",
 }

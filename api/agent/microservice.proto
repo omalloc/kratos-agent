@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package api.agent;
+
+option go_package = "github.com/omalloc/kratos-agent/api/agent;agent";
+option java_multiple_files = true;
+option java_package = "api.agent";
+
+message Microservice {
+	// 唯一键
+	string key = 1;
+	// 服务id
+	string id = 2;
+	// 服务名称
+	string name = 3;
+	// 服务版本
+	string version = 4;
+	// 服务端点IP
+	repeated string endpoints = 5;
+	// 服务元数据
+	map<string, string> metadata = 6;
+	// 所属集群
+	string cluster = 7;
+}
+
+message MicroserviceGroup {
+  // 服务名称
+	string name = 1;
+  // 服务IP
+	repeated string endpoints = 2;
+	// 服务唯一键
+	repeated string keys = 3;
+	// 运行主机名
+	repeated string hostnames = 4;
+  // 运行所属集群
+  repeated string clusters = 5;
+}
+
+message ClusterMicroservice {
+	// 集群名称
+	string name = 1;
+	// 集群服务
+	repeated Microservice services = 2;
+}
+
+message Cluster {
+  // 集群成员信息
+	message Member {
+		// 成员名称
+		string name = 1;
+		// 是否为 learner
+		bool is_learner = 2;
+		// 成员地址
+		repeated string peer_urls = 3;
+		// 客户端地址
+		repeated string client_urls = 4;
+	}
+	// 集群名称
+	string name = 1;
+	// 集群健康状态
+	bool healthy = 2;
+	// 集群成员
+	repeated Member members = 3;
+}

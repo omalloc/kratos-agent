@@ -15,7 +15,9 @@ import (
 	"github.com/omalloc/kratos-agent/internal/conf"
 	"github.com/omalloc/kratos-agent/internal/data"
 	"github.com/omalloc/kratos-agent/internal/server"
+	"github.com/omalloc/kratos-agent/internal/server/adapter"
 	"github.com/omalloc/kratos-agent/internal/service"
+	"github.com/omalloc/kratos-agent/pkg/cluster"
 )
 
 // Injectors from wire.go:
@@ -29,7 +31,13 @@ func wireApp(bootstrap *conf.Bootstrap, confServer *conf.Server, confData *conf.
 	}
 	registrar := registry.NewRegistrar(client)
 	criUsecase := biz.NewCRIUsecase(logger)
-	agentService := service.NewAgentService(logger, criUsecase)
+	v, err := cluster.NewClients(logger, bootstrap)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	clusterUsecase := biz.NewClusterUsecase(logger, v)
+	agentService := service.NewAgentService(logger, criUsecase, clusterUsecase)
 	grpcServer := server.NewGRPCServer(confServer, agentService, logger)
 	httpServer := server.NewHTTPServer(confServer, agentService, logger)
 	dataData, cleanup2, err := data.NewData(confData, logger)
@@ -37,8 +45,9 @@ func wireApp(bootstrap *conf.Bootstrap, confServer *conf.Server, confData *conf.
 		cleanup()
 		return nil, nil, err
 	}
-	v := server.NewChecker(dataData, agentService)
-	healthServer := health.NewServer(v, logger, httpServer)
+	etcd := adapter.NewETCDChecker(client)
+	v2 := server.NewChecker(dataData, etcd, agentService)
+	healthServer := health.NewServer(v2, logger, httpServer)
 	app := newApp(logger, registrar, grpcServer, httpServer, healthServer)
 	return app, func() {
 		cleanup2()
