@@ -7,10 +7,13 @@ COPY /bin /app
 
 WORKDIR /app
 
-EXPOSE 8000
-EXPOSE 9000
+EXPOSE 2381
+EXPOSE 2382
 VOLUME /data/conf
 
 ENV TZ=Asia/Shanghai
 
-CMD ["./server", "-conf", "/data/conf"]
+HEALTHCHECK --interval=5s --timeout=5s \
+    CMD curl -sS 'http://localhost:2381/health' || exit 1
+
+CMD ["./server", "--conf", "/data/conf"]
