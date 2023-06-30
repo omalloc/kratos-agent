@@ -13,7 +13,7 @@ VOLUME /data/conf
 
 ENV TZ=Asia/Shanghai
 
-HEALTHCHECK --interval=5s --timeout=5s \
-    CMD curl -sS 'http://localhost:2381/health' || exit 1
+HEALTHCHECK --interval=5s --timeout=5s -start-period=3s --retries=3 \
+    CMD curl -sS 'http://127.0.0.1:2381/health' || exit 1
 
 CMD ["./server", "--conf", "/data/conf"]
