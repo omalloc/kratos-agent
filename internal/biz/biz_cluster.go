@@ -4,6 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 	"sync"
 	"time"
 
@@ -69,6 +73,19 @@ func NewClusterUsecase(logger log.Logger, clis []*cluster.Client) *ClusterUsecas
 }
 
 func (r *ClusterUsecase) GetClusters(ctx context.Context) ([]*Cluster, error) {
+	ctx, span := tracer.Start(ctx,
+		fmt.Sprintf("func %s.%s", "ClusterUsecase", "GetClusters"),
+		trace.WithSpanKind(trace.SpanKindServer),
+	)
+	defer func() {
+		if err := recover(); err != nil {
+			span.RecordError(err.(error))
+			span.SetStatus(codes.Error, err.(error).Error())
+		}
+
+		span.End()
+	}()
+
 	var (
 		clusterInfo = make([]*Cluster, 0, len(r.clis))
 		wg          = sync.WaitGroup{}
@@ -141,10 +158,32 @@ func (r *ClusterUsecase) Ping(ctx context.Context) error {
 }
 
 func getMembers(ctx context.Context, cli *cluster.Client) ([]*pb.Member, error) {
+	ctx, span := tracer.Start(ctx,
+		fmt.Sprintf("func %s.%s", "ClusterUsecase", "getMembers"),
+		trace.WithSpanKind(trace.SpanKindServer),
+	)
+
 	resp, err := cli.MemberList(ctx)
 	if err != nil {
 		return nil, err
 	}
+
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, err.Error())
+		} else {
+			span.SetStatus(codes.Ok, "")
+		}
+
+		span.End()
+	}()
+
+	span.SetAttributes(
+		attribute.String("cluster.name", cli.Name),
+		attribute.String("cluster.members.size", fmt.Sprintf("%d", len(resp.Members))),
+	)
+
 	return resp.Members, nil
 }
 

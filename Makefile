@@ -46,16 +46,12 @@ config:
 .PHONY: api
 # generate api proto
 api:
-	mkdir -p ./api/docs && protoc --proto_path=./api \
+	protoc --proto_path=./api \
 		--proto_path=./third_party \
 		--go_out=paths=source_relative:./api \
 		--go-errors_out=paths=source_relative:. \
 		--go-http_out=paths=source_relative:./api \
 		--go-grpc_out=paths=source_relative:./api \
-		--openapiv2_out=./api/docs \
-		--openapiv2_opt=logtostderr=true \
-		--openapiv2_opt=json_names_for_fields=false \
-		--openapi_out=fq_schema_naming=true,naming=proto,default_response=false:. \
 		$(API_PROTO_FILES)
 
 .PHONY: run

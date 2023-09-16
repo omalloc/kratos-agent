@@ -16,6 +16,7 @@ type AgentService struct {
 	log      *log.Helper
 	cri      *biz.CRIUsecase
 	clusters *biz.ClusterUsecase
+	aa       *biz.CrontabUsecase
 }
 
 func NewAgentService(logger log.Logger, cri *biz.CRIUsecase, clusters *biz.ClusterUsecase) *AgentService {
@@ -23,6 +24,7 @@ func NewAgentService(logger log.Logger, cri *biz.CRIUsecase, clusters *biz.Clust
 		log:      log.NewHelper(logger),
 		cri:      cri,
 		clusters: clusters,
+		aa:       nil,
 	}
 }
 

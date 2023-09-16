@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"os"
 
 	"github.com/go-kratos/kratos/v2"
@@ -12,6 +13,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/omalloc/contrib/kratos/health"
+	trace "github.com/omalloc/contrib/kratos/tracing"
 	"github.com/omalloc/contrib/kratos/zap"
 	"go.uber.org/automaxprocs/maxprocs"
 
@@ -23,25 +25,29 @@ var (
 	// To render a whole-file example, we need a package-level declaration.
 	_ = ""
 	// Name is the name of the compiled software.
-	Name string
+	Name string = "kratos-agent"
 	// Version is the version of the compiled software.
-	Version string
+	Version string = "v0.0.0"
 	// GitHash is the git-hash of the compiled software.
-	GitHash string
+	GitHash string = "no set hash"
 	// Built is build-time the compiled software.
-	Built string
+	Built string = "0"
 	// flagconf is the config flag.
-	flagconf    string
+	flagconf string
+	// flagverbose is the verbose flag.
 	flagverbose bool
-
-	id, _ = os.Hostname()
+	// service unique id
+	id string
 )
 
 func init() {
-	maxprocs.Set(maxprocs.Logger(nil))
+	_, _ = maxprocs.Set(maxprocs.Logger(nil))
+
+	hostname, _ := os.Hostname()
 
 	rootCmd.PersistentFlags().StringVar(&flagconf, "conf", "../../configs", "config path")
 	rootCmd.PersistentFlags().BoolVarP(&flagverbose, "verbose", "v", false, "verbose output")
+	rootCmd.PersistentFlags().StringVar(&id, "id", hostname, "service unique-id; default: hostname")
 
 	rootCmd.AddCommand(versionCmd)
 }
@@ -59,11 +65,17 @@ func newApp(logger log.Logger, registrar registry.Registrar, gs *grpc.Server, hs
 			hs,
 			hh,
 		),
+		kratos.AfterStart(func(ctx context.Context) error {
+			log.Infof("started with pid %d", os.Getpid())
+			return nil
+		}),
 	)
 }
 
 func main() {
-	rootCmd.Execute()
+	if err := rootCmd.Execute(); err != nil {
+		panic(err)
+	}
 	logger := log.With(zap.NewLogger(zap.Verbose(flagverbose)),
 		"ts", log.DefaultTimestamp,
 		// "caller", log.DefaultCaller,
@@ -90,6 +102,11 @@ func main() {
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
+
+	trace.InitTracer(
+		trace.WithEndpoint(bc.Tracing.Endpoint),
+		trace.WithServiceName(Name),
+	)
 
 	app, cleanup, err := wireApp(&bc, bc.Server, bc.Data, logger)
 	if err != nil {

@@ -3,7 +3,8 @@ FROM docker.bs58i.baishancloud.com/base/alpine:3.14
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
      && apk add --no-cache tzdata curl
 
-COPY /bin /app
+COPY ./bin/ /app
+COPY ./configs /data/conf
 
 WORKDIR /app
 

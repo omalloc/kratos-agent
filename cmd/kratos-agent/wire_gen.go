@@ -29,7 +29,7 @@ func wireApp(bootstrap *conf.Bootstrap, confServer *conf.Server, confData *conf.
 	if err != nil {
 		return nil, nil, err
 	}
-	registrar := registry.NewRegistrar(client)
+	registrar := registry.NewRegistrar(client, protobufRegistry)
 	criUsecase := biz.NewCRIUsecase(logger)
 	v, err := cluster.NewClients(logger, bootstrap)
 	if err != nil {
