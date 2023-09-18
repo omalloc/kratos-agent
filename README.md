@@ -1,6 +1,6 @@
 # Kratos Agent
 
-[docs](https://yapi-plutus.bs58i.baishancdnx.com/project/382/interface/api/cat_2244)
+[docs](./)
 
 ## Overview
 
@@ -18,6 +18,6 @@ Kratos Agent is a service that runs on each node in the cluster and is responsib
 ### Usage
 
 ```bash
-$ docker pull docker.bs58i.baishancloud.com/resdev/kratos-agent:latest
-$ docker run --rm --name kratos-agent -v ./configs:/configs docker.bs58i.baishancloud.com/resdev/kratos-agent:latest
+$ docker pull omalloc/kratos-agent:latest
+$ docker run --rm --name kratos-agent -v ./configs:/configs omalloc/kratos-agent:latest
 ```
