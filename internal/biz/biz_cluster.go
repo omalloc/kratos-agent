@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/omalloc/kratos-agent/internal/conf"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
@@ -61,15 +62,21 @@ type Cluster struct {
 }
 
 type ClusterUsecase struct {
-	log  *log.Helper
-	clis []*cluster.Client
+	log    *log.Helper
+	clis   []*cluster.Client
+	prefix string
 }
 
-func NewClusterUsecase(logger log.Logger, clis []*cluster.Client) *ClusterUsecase {
-	return &ClusterUsecase{
-		log:  log.NewHelper(logger),
-		clis: clis,
+func NewClusterUsecase(logger log.Logger, clis []*cluster.Client, c *conf.Bootstrap) *ClusterUsecase {
+	r := &ClusterUsecase{
+		log:    log.NewHelper(logger),
+		clis:   clis,
+		prefix: c.ClusterPrefixKey,
 	}
+	if c.ClusterPrefixKey == "" {
+		r.prefix = "/"
+	}
+	return r
 }
 
 func (r *ClusterUsecase) GetClusters(ctx context.Context) ([]*Cluster, error) {
@@ -134,14 +141,14 @@ func (r *ClusterUsecase) GetServices(ctx context.Context) ([]*ClusterMicroservic
 		cm = make([]*ClusterMicroservice, 0, len(r.clis))
 	)
 	for _, cli := range r.clis {
-		srvs, err := getServices(ctx, cli)
+		svc, err := r.getServices(ctx, cli)
 		if err != nil {
 			continue
 		}
 
 		cm = append(cm, &ClusterMicroservice{
 			Name:     cli.Name,
-			Services: srvs,
+			Services: svc,
 		})
 	}
 
@@ -187,8 +194,8 @@ func getMembers(ctx context.Context, cli *cluster.Client) ([]*pb.Member, error) 
 	return resp.Members, nil
 }
 
-func getServices(ctx context.Context, cli *cluster.Client) ([]*Microservice, error) {
-	resp, err := cli.Get(ctx, "/microservices", clientv3.WithPrefix())
+func (r *ClusterUsecase) getServices(ctx context.Context, cli *cluster.Client) ([]*Microservice, error) {
+	resp, err := cli.Get(ctx, r.prefix, clientv3.WithPrefix())
 	if err != nil {
 		return nil, err
 	}

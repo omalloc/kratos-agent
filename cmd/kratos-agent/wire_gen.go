@@ -36,7 +36,7 @@ func wireApp(bootstrap *conf.Bootstrap, confServer *conf.Server, confData *conf.
 		cleanup()
 		return nil, nil, err
 	}
-	clusterUsecase := biz.NewClusterUsecase(logger, v)
+	clusterUsecase := biz.NewClusterUsecase(logger, v, bootstrap)
 	agentService := service.NewAgentService(logger, criUsecase, clusterUsecase)
 	grpcServer := server.NewGRPCServer(confServer, agentService, logger)
 	httpServer := server.NewHTTPServer(confServer, agentService, logger)

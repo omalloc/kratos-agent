@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"strings"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/samber/lo"
@@ -44,6 +45,7 @@ func (s *AgentService) ListService(ctx context.Context, req *pb.ListServiceReque
 				Version:   cur.Version,
 				Endpoints: cur.Endpoints,
 				Metadata:  cur.Metadata,
+				Namespace: s.getFirstNameKey(cur.Key),
 			}
 		})
 	})
@@ -51,6 +53,15 @@ func (s *AgentService) ListService(ctx context.Context, req *pb.ListServiceReque
 	return &pb.ListServiceReply{
 		Data: result,
 	}, nil
+}
+
+func (s *AgentService) getFirstNameKey(key string) string {
+	values := strings.Split(key, "/")
+	// key-format: /microservices/{service-name}/{hostname}
+	if len(values) > 1 {
+		return values[1]
+	}
+	return ""
 }
 
 func (s *AgentService) ListServiceGroup(ctx context.Context, req *pb.ListServiceGroupRequest) (*pb.ListServiceGroupReply, error) {

@@ -21,6 +21,8 @@ message Microservice {
 	map<string, string> metadata = 6;
 	// 所属集群
 	string cluster = 7;
+	// 命名空间
+	string namespace = 8;
 }
 
 message MicroserviceGroup {

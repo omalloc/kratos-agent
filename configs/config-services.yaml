@@ -1,6 +1,7 @@
 registry:
   enabled: true
   only_discovery: false
+  namespace: /microservices
   endpoints:
     - 127.0.0.1:2379
 tracing:
