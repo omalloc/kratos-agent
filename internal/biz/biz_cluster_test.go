@@ -2,6 +2,7 @@ package biz_test
 
 import (
 	"context"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	"strings"
 	"testing"
 
@@ -22,7 +23,9 @@ func loadConfig() *conf.Bootstrap {
 			file.NewSource("../../configs"),
 		),
 	)
-	defer c.Close()
+	defer func() {
+		_ = c.Close()
+	}()
 
 	if err := c.Load(); err != nil {
 		panic(err)
@@ -44,7 +47,7 @@ func TestGetClusters(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	clusterUsecase := biz.NewClusterUsecase(log.GetLogger(), clis)
+	clusterUsecase := biz.NewClusterUsecase(log.GetLogger(), clis, bc)
 
 	if clusters, err := clusterUsecase.GetClusters(context.TODO()); err == nil {
 		for _, c := range clusters {
@@ -61,7 +64,7 @@ func TestGetServices(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	clusterUsecase := biz.NewClusterUsecase(log.GetLogger(), clis)
+	clusterUsecase := biz.NewClusterUsecase(log.GetLogger(), clis, bc)
 
 	if services, err := clusterUsecase.GetServices(context.TODO()); err == nil {
 		for _, s := range services {
@@ -71,4 +74,33 @@ func TestGetServices(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestGetAllKeys(t *testing.T) {
+	bc := loadConfig()
+
+	clis, err := cluster.NewClients(log.GetLogger(), bc)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, cli := range clis {
+		resp, err := cli.Get(context.Background(), "/",
+			clientv3.WithPrefix(),
+			clientv3.WithKeysOnly(),
+		)
+		if err != nil {
+			continue
+		}
+
+		println("cluster name:", cli.Name, "\tkey count:", len(resp.Kvs))
+
+		for _, k := range resp.Kvs {
+			println(string(k.Key))
+		}
+	}
+}
+
+func TestValueByKey(t *testing.T) {
+
 }

@@ -22,6 +22,8 @@ const (
 	Agent_ListCluster_FullMethodName      = "/api.agent.Agent/ListCluster"
 	Agent_ListService_FullMethodName      = "/api.agent.Agent/ListService"
 	Agent_ListServiceGroup_FullMethodName = "/api.agent.Agent/ListServiceGroup"
+	Agent_ListKey_FullMethodName          = "/api.agent.Agent/ListKey"
+	Agent_GetKey_FullMethodName           = "/api.agent.Agent/GetKey"
 )
 
 // AgentClient is the client API for Agent service.
@@ -40,6 +42,8 @@ type AgentClient interface {
 	//
 	// returns a list of group by service.
 	ListServiceGroup(ctx context.Context, in *ListServiceGroupRequest, opts ...grpc.CallOption) (*ListServiceGroupReply, error)
+	ListKey(ctx context.Context, in *ListKeyRequest, opts ...grpc.CallOption) (*ListKeyReply, error)
+	GetKey(ctx context.Context, in *GetKeyRequest, opts ...grpc.CallOption) (*GetKeyReply, error)
 }
 
 type agentClient struct {
@@ -77,6 +81,24 @@ func (c *agentClient) ListServiceGroup(ctx context.Context, in *ListServiceGroup
 	return out, nil
 }
 
+func (c *agentClient) ListKey(ctx context.Context, in *ListKeyRequest, opts ...grpc.CallOption) (*ListKeyReply, error) {
+	out := new(ListKeyReply)
+	err := c.cc.Invoke(ctx, Agent_ListKey_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *agentClient) GetKey(ctx context.Context, in *GetKeyRequest, opts ...grpc.CallOption) (*GetKeyReply, error) {
+	out := new(GetKeyReply)
+	err := c.cc.Invoke(ctx, Agent_GetKey_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AgentServer is the server API for Agent service.
 // All implementations must embed UnimplementedAgentServer
 // for forward compatibility
@@ -93,6 +115,8 @@ type AgentServer interface {
 	//
 	// returns a list of group by service.
 	ListServiceGroup(context.Context, *ListServiceGroupRequest) (*ListServiceGroupReply, error)
+	ListKey(context.Context, *ListKeyRequest) (*ListKeyReply, error)
+	GetKey(context.Context, *GetKeyRequest) (*GetKeyReply, error)
 	mustEmbedUnimplementedAgentServer()
 }
 
@@ -108,6 +132,12 @@ func (UnimplementedAgentServer) ListService(context.Context, *ListServiceRequest
 }
 func (UnimplementedAgentServer) ListServiceGroup(context.Context, *ListServiceGroupRequest) (*ListServiceGroupReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListServiceGroup not implemented")
+}
+func (UnimplementedAgentServer) ListKey(context.Context, *ListKeyRequest) (*ListKeyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListKey not implemented")
+}
+func (UnimplementedAgentServer) GetKey(context.Context, *GetKeyRequest) (*GetKeyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetKey not implemented")
 }
 func (UnimplementedAgentServer) mustEmbedUnimplementedAgentServer() {}
 
@@ -176,6 +206,42 @@ func _Agent_ListServiceGroup_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Agent_ListKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServer).ListKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Agent_ListKey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServer).ListKey(ctx, req.(*ListKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Agent_GetKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServer).GetKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Agent_GetKey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServer).GetKey(ctx, req.(*GetKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Agent_ServiceDesc is the grpc.ServiceDesc for Agent service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -194,6 +260,14 @@ var Agent_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListServiceGroup",
 			Handler:    _Agent_ListServiceGroup_Handler,
+		},
+		{
+			MethodName: "ListKey",
+			Handler:    _Agent_ListKey_Handler,
+		},
+		{
+			MethodName: "GetKey",
+			Handler:    _Agent_GetKey_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -7,7 +7,9 @@ registry:
 tracing:
   endpoint: http://127.0.0.1:14268/api/traces
 clusters:
-  - name: jh-01
+  - name: xm-01
     enabled: true
     endpoints:
-      - 127.0.0.1:2379
+      - 172.18.156.47:2379
+      - 172.18.156.148:2379
+      - 172.18.156.207:2379

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package api.agent;
+
+option go_package = "github.com/omalloc/kratos-agent/api/agent;agent";
+option java_multiple_files = true;
+option java_package = "api.agent";
+
+message ListKeyRequest {
+    string prefix = 1;
+    string cluster = 2;
+}
+message ListKeyReply {
+    repeated string keys = 1;
+}
+message GetKeyRequest {
+    string key = 1;
+    string cluster = 2;
+}
+message GetKeyReply {
+    string value = 1;
+}
+
+message KV {
+    string key = 1;
+    string value = 2;
+}

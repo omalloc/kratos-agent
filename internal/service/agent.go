@@ -141,6 +141,20 @@ func (s *AgentService) ListCluster(ctx context.Context, req *pb.ListClusterReque
 	}, nil
 }
 
+func (s *AgentService) ListKey(ctx context.Context, req *pb.ListKeyRequest) (*pb.ListKeyReply, error) {
+	maps := s.clusters.Keys(ctx, req.Cluster)
+
+	return &pb.ListKeyReply{
+		Keys: maps[req.Cluster],
+	}, nil
+}
+
+func (s *AgentService) GetKey(ctx context.Context, req *pb.GetKeyRequest) (*pb.GetKeyReply, error) {
+	value := s.clusters.GetValue(ctx, req.Cluster, req.Key)
+
+	return &pb.GetKeyReply{Value: value}, nil
+}
+
 func (s *AgentService) Check(ctx context.Context) error {
 	return s.clusters.Ping(ctx)
 }

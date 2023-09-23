@@ -4,6 +4,7 @@ package api.agent;
 
 import "google/api/annotations.proto";
 import "agent/microservice.proto";
+import "agent/kv.proto";
 
 option go_package = "github.com/omalloc/kratos-agent/api/agent;agent";
 option java_multiple_files = true;
@@ -35,6 +36,18 @@ service Agent {
 	rpc ListServiceGroup (ListServiceGroupRequest) returns (ListServiceGroupReply) {
 		option (google.api.http) = {
 			get: "/agent/services/group"
+		};
+	};
+
+	rpc ListKey (ListKeyRequest) returns (ListKeyReply) {
+		option (google.api.http) = {
+			get: "/agent/kv/keys"
+		};
+	};
+
+	rpc GetKey (GetKeyRequest) returns (GetKeyReply) {
+		option (google.api.http) = {
+			get: "/agent/kv/-/value"
 		};
 	};
 }

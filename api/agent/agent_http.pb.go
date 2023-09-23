@@ -19,15 +19,19 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationAgentGetKey = "/api.agent.Agent/GetKey"
 const OperationAgentListCluster = "/api.agent.Agent/ListCluster"
+const OperationAgentListKey = "/api.agent.Agent/ListKey"
 const OperationAgentListService = "/api.agent.Agent/ListService"
 const OperationAgentListServiceGroup = "/api.agent.Agent/ListServiceGroup"
 
 type AgentHTTPServer interface {
+	GetKey(context.Context, *GetKeyRequest) (*GetKeyReply, error)
 	// ListCluster ListCluster 获取集群列表
 	//
 	// returns a list of clusters
 	ListCluster(context.Context, *ListClusterRequest) (*ListClusterReply, error)
+	ListKey(context.Context, *ListKeyRequest) (*ListKeyReply, error)
 	// ListService ListService 获取服务列表
 	//
 	// returns a list of services
@@ -43,6 +47,8 @@ func RegisterAgentHTTPServer(s *http.Server, srv AgentHTTPServer) {
 	r.GET("/agent/clusters", _Agent_ListCluster0_HTTP_Handler(srv))
 	r.GET("/agent/services", _Agent_ListService0_HTTP_Handler(srv))
 	r.GET("/agent/services/group", _Agent_ListServiceGroup0_HTTP_Handler(srv))
+	r.GET("/agent/kv/keys", _Agent_ListKey0_HTTP_Handler(srv))
+	r.GET("/agent/kv/-/value", _Agent_GetKey0_HTTP_Handler(srv))
 }
 
 func _Agent_ListCluster0_HTTP_Handler(srv AgentHTTPServer) func(ctx http.Context) error {
@@ -102,8 +108,48 @@ func _Agent_ListServiceGroup0_HTTP_Handler(srv AgentHTTPServer) func(ctx http.Co
 	}
 }
 
+func _Agent_ListKey0_HTTP_Handler(srv AgentHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListKeyRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAgentListKey)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListKey(ctx, req.(*ListKeyRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListKeyReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Agent_GetKey0_HTTP_Handler(srv AgentHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetKeyRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAgentGetKey)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetKey(ctx, req.(*GetKeyRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetKeyReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AgentHTTPClient interface {
+	GetKey(ctx context.Context, req *GetKeyRequest, opts ...http.CallOption) (rsp *GetKeyReply, err error)
 	ListCluster(ctx context.Context, req *ListClusterRequest, opts ...http.CallOption) (rsp *ListClusterReply, err error)
+	ListKey(ctx context.Context, req *ListKeyRequest, opts ...http.CallOption) (rsp *ListKeyReply, err error)
 	ListService(ctx context.Context, req *ListServiceRequest, opts ...http.CallOption) (rsp *ListServiceReply, err error)
 	ListServiceGroup(ctx context.Context, req *ListServiceGroupRequest, opts ...http.CallOption) (rsp *ListServiceGroupReply, err error)
 }
@@ -116,11 +162,37 @@ func NewAgentHTTPClient(client *http.Client) AgentHTTPClient {
 	return &AgentHTTPClientImpl{client}
 }
 
+func (c *AgentHTTPClientImpl) GetKey(ctx context.Context, in *GetKeyRequest, opts ...http.CallOption) (*GetKeyReply, error) {
+	var out GetKeyReply
+	pattern := "/agent/kv/-/value"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAgentGetKey))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *AgentHTTPClientImpl) ListCluster(ctx context.Context, in *ListClusterRequest, opts ...http.CallOption) (*ListClusterReply, error) {
 	var out ListClusterReply
 	pattern := "/agent/clusters"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationAgentListCluster))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AgentHTTPClientImpl) ListKey(ctx context.Context, in *ListKeyRequest, opts ...http.CallOption) (*ListKeyReply, error) {
+	var out ListKeyReply
+	pattern := "/agent/kv/keys"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAgentListKey))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

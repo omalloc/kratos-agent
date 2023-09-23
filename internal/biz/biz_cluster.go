@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/omalloc/kratos-agent/internal/conf"
+	"go.etcd.io/etcd/api/v3/mvccpb"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
@@ -64,6 +65,7 @@ type Cluster struct {
 type ClusterUsecase struct {
 	log    *log.Helper
 	clis   []*cluster.Client
+	cliMap map[string]*cluster.Client
 	prefix string
 }
 
@@ -71,8 +73,14 @@ func NewClusterUsecase(logger log.Logger, clis []*cluster.Client, c *conf.Bootst
 	r := &ClusterUsecase{
 		log:    log.NewHelper(logger),
 		clis:   clis,
+		cliMap: make(map[string]*cluster.Client, len(clis)),
 		prefix: c.ClusterPrefixKey,
 	}
+	// translate to map
+	for _, cli := range clis {
+		r.cliMap[cli.Name] = cli
+	}
+
 	if c.ClusterPrefixKey == "" {
 		r.prefix = "/"
 	}
@@ -155,13 +163,62 @@ func (r *ClusterUsecase) GetServices(ctx context.Context) ([]*ClusterMicroservic
 	return cm, nil
 }
 
-func (r *ClusterUsecase) Ping(ctx context.Context) error {
+func (r *ClusterUsecase) getServices(ctx context.Context, cli *cluster.Client) ([]*Microservice, error) {
+	resp, err := cli.Get(ctx, r.prefix, clientv3.WithPrefix())
+	if err != nil {
+		return nil, err
+	}
+	var services = make([]*Microservice, 0, len(resp.Kvs))
+	for _, kv := range resp.Kvs {
+		var v Microservice
+		if err := json.Unmarshal(kv.Value, &v); err != nil {
+			continue
+		}
+		v.Key = string(kv.Key)
+		services = append(services, &v)
+	}
+
+	return services, nil
+}
+
+func (r *ClusterUsecase) Ping(_ context.Context) error {
 	for _, cli := range r.clis {
 		if cli.ActiveConnection().GetState() != connectivity.Ready {
 			return ErrEtcdClientNotReady
 		}
 	}
 	return nil
+}
+
+func (r *ClusterUsecase) Keys(ctx context.Context, clusterName string) map[string][]string {
+	return lo.Reduce(r.clis, func(agg map[string][]string, cli *cluster.Client, _ int) map[string][]string {
+		resp, err := cli.Get(ctx, r.prefix, clientv3.WithPrefix(), clientv3.WithKeysOnly())
+		if err != nil {
+			return agg
+		}
+
+		keys := lo.Map(resp.Kvs, func(item *mvccpb.KeyValue, _ int) string {
+			return string(item.Key)
+		})
+
+		agg[cli.Name] = keys
+
+		return agg
+	}, make(map[string][]string))
+}
+
+func (r *ClusterUsecase) GetValue(ctx context.Context, cluster string, key string) string {
+	cli, ok := r.cliMap[cluster]
+	if !ok {
+		return ""
+	}
+
+	resp, err := cli.Get(ctx, key, clientv3.WithLimit(1))
+	if err != nil || len(resp.Kvs) <= 0 {
+		return ""
+	}
+
+	return string(resp.Kvs[0].Value)
 }
 
 func getMembers(ctx context.Context, cli *cluster.Client) ([]*pb.Member, error) {
@@ -192,22 +249,4 @@ func getMembers(ctx context.Context, cli *cluster.Client) ([]*pb.Member, error) 
 	)
 
 	return resp.Members, nil
-}
-
-func (r *ClusterUsecase) getServices(ctx context.Context, cli *cluster.Client) ([]*Microservice, error) {
-	resp, err := cli.Get(ctx, r.prefix, clientv3.WithPrefix())
-	if err != nil {
-		return nil, err
-	}
-	var services = make([]*Microservice, 0, len(resp.Kvs))
-	for _, kv := range resp.Kvs {
-		var v Microservice
-		if err := json.Unmarshal(kv.Value, &v); err != nil {
-			continue
-		}
-		v.Key = string(kv.Key)
-		services = append(services, &v)
-	}
-
-	return services, nil
 }
